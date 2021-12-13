@@ -16,7 +16,7 @@ import { BookmarkList } from "./components/bookmark-list";
 
 export const App = () => (
   <ChakraProvider theme={theme}>
-    <Box textAlign="center" fontSize="xl">
+    <Box fontSize="xl">
       <Grid
         minH="100vh"
         p={3}
