@@ -8,14 +8,20 @@ import { Input } from "@chakra-ui/input";
 import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Divider, HStack, Image, VStack } from "@chakra-ui/react";
+import { useBookmarkStore } from "../stores/use-bookmark-store";
+import { BookmarkElement } from "../models/bookmark";
 
 type Inputs = {
   faviconUrl: string;
+  group: string;
+  subGroup: string;
   title: string;
   url: string;
 };
 
 export const CreateBookmarkForm: React.FC = () => {
+  const addBookmark = useBookmarkStore((state) => state.addBookMark);
+
   const {
     handleSubmit,
     getValues,
@@ -40,7 +46,15 @@ export const CreateBookmarkForm: React.FC = () => {
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        getTitleFromURL(data.url).then((url) => alert(url));
+        addBookmark(
+          {
+            faviconUrl: data.faviconUrl,
+            label: data.title,
+            url: data.url,
+          } as BookmarkElement,
+          data.group,
+          data.subGroup
+        );
         resolve(data);
       }, 3000);
     });
@@ -116,6 +130,39 @@ export const CreateBookmarkForm: React.FC = () => {
           />
           <FormErrorMessage>
             {errors.url && errors.url.message}
+          </FormErrorMessage>
+        </FormControl>
+        <Divider />
+        <FormControl isInvalid={!!errors.group}>
+          <FormLabel htmlFor="group">Group</FormLabel>
+          <Input
+            id="group"
+            placeholder="group"
+            {...register("group", {
+              minLength: {
+                value: 4,
+                message: "Minimum length should be 4",
+              },
+            })}
+          />
+          <FormErrorMessage>
+            {errors.group && errors.group.message}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.subGroup}>
+          <FormLabel htmlFor="subGroup">Sub Group</FormLabel>
+          <Input
+            id="subGroup"
+            placeholder="subGroup"
+            {...register("subGroup", {
+              minLength: {
+                value: 4,
+                message: "Minimum length should be 4",
+              },
+            })}
+          />
+          <FormErrorMessage>
+            {errors.subGroup && errors.subGroup.message}
           </FormErrorMessage>
         </FormControl>
         <Button
