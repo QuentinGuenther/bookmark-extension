@@ -4,6 +4,7 @@ import {
   BookmarkElement,
   BookmarkGroup,
 } from "../models/bookmark";
+import { getBookmarks, storeBookmarks } from "../storage/chrome-storage";
 
 interface BookmarkState {
   bookmarkList: Array<BookmarkElement | BookmarkGroup>;
@@ -12,11 +13,16 @@ interface BookmarkState {
     group?: string,
     subgroup?: string
   ) => void;
+  fetch: () => void;
 }
 
 export const useBookmarkStore = create<BookmarkState>((set) => ({
   bookmarkList: [],
-  addBookMark: (
+  fetch: async () => {
+    const bookmarkList = await getBookmarks();
+    set({ bookmarkList: await bookmarkList });
+  },
+  addBookMark: async (
     bookmarkElement: BookmarkElement,
     group?: string,
     subgroup?: string
@@ -50,6 +56,8 @@ export const useBookmarkStore = create<BookmarkState>((set) => ({
       } else {
         state.bookmarkList.push(bookmarkElement);
       }
+
+      storeBookmarks(state.bookmarkList);
 
       return {
         bookmarkList: [...state.bookmarkList],

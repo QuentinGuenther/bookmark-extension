@@ -141,6 +141,7 @@ function BookMark({
 
 export const BookmarkList: React.FC = () => {
   const bookMarks = useBookmarkStore((state) => state.bookmarkList);
+  console.log(bookMarks);
   return (
     <SimpleGrid columns={2} spacingX={2} spacingY={4}>
       {bookMarks.map((element) => {
