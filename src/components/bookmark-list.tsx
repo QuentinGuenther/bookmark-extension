@@ -1,13 +1,4 @@
-import {
-  Box,
-  Heading,
-  HStack,
-  LinkBox,
-  LinkOverlay,
-  SimpleGrid,
-  VStack,
-} from "@chakra-ui/layout";
-import { Image, Tooltip } from "@chakra-ui/react";
+import { Box, Heading, SimpleGrid, VStack } from "@chakra-ui/layout";
 import {
   BookmarkElement,
   BookmarkGroup as BookmarkGroupType,
@@ -15,6 +6,7 @@ import {
   isBookmarkGroup,
 } from "../models/bookmark";
 import { useBookmarkStore } from "../stores/use-bookmark-store";
+import { BookmarkItem } from "./bookmark-item";
 
 interface BookmarkGroupProps {
   bookmarkList: Array<BookmarkElement | BookmarkGroupType>;
@@ -40,21 +32,18 @@ const BookmarkGroup: React.FC<BookmarkGroupProps> = ({
           {bookmarkList.map((element) => {
             if (isBookmarkElement(element)) {
               element = element as BookmarkElement;
-              return (
-                <BookMark
-                  icon={element.faviconUrl}
-                  title={element.label}
-                  url={element.url}
-                />
-              );
+              return <BookmarkItem bookmarkElement={element} group={label} />;
             } else if (isBookmarkGroup(element)) {
               element = element as BookmarkGroupType;
               return (
                 <BookmarkSubGroup
                   label={element.label}
+                  groupLabel={label}
                   bookmarkList={element.bookmarkList}
                 />
               );
+            } else {
+              return <></>;
             }
           })}
         </VStack>
@@ -63,8 +52,12 @@ const BookmarkGroup: React.FC<BookmarkGroupProps> = ({
   );
 };
 
-const BookmarkSubGroup: React.FC<BookmarkGroupProps> = ({
+interface BookmarkSubGroupProps extends BookmarkGroupProps {
+  groupLabel: string;
+}
+const BookmarkSubGroup: React.FC<BookmarkSubGroupProps> = ({
   bookmarkList,
+  groupLabel,
   label,
   ...rest
 }) => {
@@ -76,10 +69,10 @@ const BookmarkSubGroup: React.FC<BookmarkGroupProps> = ({
           if (isBookmarkElement(element)) {
             element = element as BookmarkElement;
             return (
-              <BookMark
-                icon={element.faviconUrl}
-                title={element.label}
-                url={element.url}
+              <BookmarkItem
+                bookmarkElement={element}
+                group={groupLabel}
+                subGroup={label}
               />
             );
           } else if (isBookmarkGroup(element)) {
@@ -87,9 +80,12 @@ const BookmarkSubGroup: React.FC<BookmarkGroupProps> = ({
             return (
               <BookmarkSubGroup
                 label={element.label}
+                groupLabel={groupLabel}
                 bookmarkList={element.bookmarkList}
               />
             );
+          } else {
+            return <></>;
           }
         })}
       </VStack>
@@ -97,63 +93,14 @@ const BookmarkSubGroup: React.FC<BookmarkGroupProps> = ({
   );
 };
 
-function BookMark({
-  title,
-  url,
-  icon,
-  ...rest
-}: {
-  icon: string;
-  title: string;
-  url: string;
-}) {
-  return (
-    <Tooltip
-      hasArrow
-      openDelay={500}
-      label={url}
-      w="100%"
-      float="left"
-      fontSize="sm"
-    >
-      <LinkBox
-        as="article"
-        p={2}
-        width="100%"
-        borderRadius="sm"
-        _hover={{ bg: "teal.700" }}
-      >
-        <HStack {...rest}>
-          <Image
-            src={icon}
-            width="32px"
-            height="32px"
-            fallbackSrc="favicon.ico"
-          />
-          <LinkOverlay href={url} whiteSpace="nowrap" fontSize="sm">
-            {title}
-          </LinkOverlay>
-        </HStack>
-      </LinkBox>
-    </Tooltip>
-  );
-}
-
 export const BookmarkList: React.FC = () => {
   const bookMarks = useBookmarkStore((state) => state.bookmarkList);
-  console.log(bookMarks);
   return (
     <SimpleGrid columns={2} spacingX={2} spacingY={4}>
       {bookMarks.map((element) => {
         if (isBookmarkElement(element)) {
           element = element as BookmarkElement;
-          return (
-            <BookMark
-              icon={element.faviconUrl}
-              title={element.label}
-              url={element.url}
-            />
-          );
+          return <BookmarkItem bookmarkElement={element} />;
         } else if (isBookmarkGroup(element)) {
           element = element as BookmarkGroupType;
           return (
@@ -162,6 +109,8 @@ export const BookmarkList: React.FC = () => {
               bookmarkList={element.bookmarkList}
             />
           );
+        } else {
+          return <></>;
         }
       })}
     </SimpleGrid>

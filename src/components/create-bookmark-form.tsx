@@ -19,7 +19,17 @@ type Inputs = {
   url: string;
 };
 
-export const CreateBookmarkForm: React.FC = () => {
+interface CreateBookmarkFormProps {
+  data?: {
+    bookmarkElement: BookmarkElement;
+    group?: string;
+    subGroup?: string;
+  };
+}
+
+export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
+  data,
+}) => {
   const addBookmark = useBookmarkStore((state) => state.addBookMark);
 
   const {
@@ -77,6 +87,7 @@ export const CreateBookmarkForm: React.FC = () => {
           <Input
             id="url"
             placeholder="url"
+            value={data?.bookmarkElement.url}
             {...register("url", {
               required: "This is required",
               minLength: {
@@ -102,6 +113,7 @@ export const CreateBookmarkForm: React.FC = () => {
             <Input
               id="faviconUrl"
               placeholder="favicon url"
+              value={data?.bookmarkElement.faviconUrl}
               {...register("faviconUrl", {
                 required: "This is required",
                 minLength: {
@@ -120,6 +132,7 @@ export const CreateBookmarkForm: React.FC = () => {
           <Input
             id="title"
             placeholder="title"
+            value={data?.bookmarkElement.label}
             {...register("title", {
               required: "This is required",
               minLength: {
@@ -138,6 +151,7 @@ export const CreateBookmarkForm: React.FC = () => {
           <Input
             id="group"
             placeholder="group"
+            value={data?.group}
             {...register("group", {
               minLength: {
                 value: 4,
@@ -154,6 +168,7 @@ export const CreateBookmarkForm: React.FC = () => {
           <Input
             id="subGroup"
             placeholder="subGroup"
+            value={data?.subGroup}
             {...register("subGroup", {
               minLength: {
                 value: 4,

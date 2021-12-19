@@ -8,14 +8,35 @@ import {
   ModalCloseButton,
   ModalBody,
 } from "@chakra-ui/modal";
+import React from "react";
+import { BookmarkElement } from "../models/bookmark";
 import { CreateBookmarkForm } from "./create-bookmark-form";
 
-export const AddNewBookmark: React.FC = () => {
+interface AddNewBookmarkProps {
+  useOpenButton?: boolean;
+  show?: boolean;
+  data?: {
+    bookmarkElement: BookmarkElement;
+    group?: string;
+    subGroup?: string;
+  };
+}
+export const AddNewBookmark: React.FC<AddNewBookmarkProps> = ({
+  useOpenButton = true,
+  show,
+  data,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  React.useEffect(() => {
+    if (show) {
+      onOpen();
+    }
+  }, [onOpen, show]);
 
   return (
     <>
-      <Button onClick={onOpen}>Open Modal</Button>
+      {useOpenButton && <Button onClick={onOpen}>Open Modal</Button>}
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -23,7 +44,7 @@ export const AddNewBookmark: React.FC = () => {
           <ModalHeader>Modal Title</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <CreateBookmarkForm />
+            <CreateBookmarkForm data={data} />
           </ModalBody>
         </ModalContent>
       </Modal>
