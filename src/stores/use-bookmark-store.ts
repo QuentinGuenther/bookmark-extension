@@ -1,10 +1,12 @@
 import create from "zustand";
+import { v4 as uuidv4 } from "uuid";
 import {
   BookmarkBuilder,
   BookmarkElement,
   BookmarkGroup,
 } from "../models/bookmark";
 import { getBookmarks, storeBookmarks } from "../storage/chrome-storage";
+import filterDeep from "deepdash/es/filterDeep";
 
 interface BookmarkState {
   bookmarkList: Array<BookmarkElement | BookmarkGroup>;
@@ -13,6 +15,7 @@ interface BookmarkState {
     group?: string,
     subgroup?: string
   ) => void;
+  deleteBookmark: (id: string, group?: string, subgroup?: string) => void;
   fetch: () => void;
 }
 
@@ -28,6 +31,9 @@ export const useBookmarkStore = create<BookmarkState>((set) => ({
     subgroup?: string
   ) => {
     set((state) => {
+      if (!bookmarkElement.id) {
+        bookmarkElement.id = uuidv4();
+      }
       let groupElement;
       let subGroupElement;
       if (group) {
@@ -61,6 +67,23 @@ export const useBookmarkStore = create<BookmarkState>((set) => ({
 
       return {
         bookmarkList: [...state.bookmarkList],
+      };
+    });
+  },
+  deleteBookmark: (id: string, group?: string, subGroup?: string) => {
+    set((state) => {
+      const filtrate = filterDeep(
+        state.bookmarkList,
+        (parent) => {
+          if (parent.id === id) return false;
+          else return true;
+        },
+        {
+          leavesOnly: true,
+        }
+      );
+      return {
+        bookmarkList: filtrate,
       };
     });
   },

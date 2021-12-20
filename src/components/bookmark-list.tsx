@@ -32,11 +32,18 @@ const BookmarkGroup: React.FC<BookmarkGroupProps> = ({
           {bookmarkList.map((element) => {
             if (isBookmarkElement(element)) {
               element = element as BookmarkElement;
-              return <BookmarkItem bookmarkElement={element} group={label} />;
+              return (
+                <BookmarkItem
+                  key={element.id}
+                  bookmarkElement={element}
+                  group={label}
+                />
+              );
             } else if (isBookmarkGroup(element)) {
               element = element as BookmarkGroupType;
               return (
                 <BookmarkSubGroup
+                  key={`bookmarkGroup_${element.label}_bookmarkSubGroup_${element.label}`}
                   label={element.label}
                   groupLabel={label}
                   bookmarkList={element.bookmarkList}
@@ -70,6 +77,7 @@ const BookmarkSubGroup: React.FC<BookmarkSubGroupProps> = ({
             element = element as BookmarkElement;
             return (
               <BookmarkItem
+                key={element.id}
                 bookmarkElement={element}
                 group={groupLabel}
                 subGroup={label}
@@ -79,6 +87,7 @@ const BookmarkSubGroup: React.FC<BookmarkSubGroupProps> = ({
             element = element as BookmarkGroupType;
             return (
               <BookmarkSubGroup
+                key={`bookmarkGroup_${element.label}_bookmarkSubGroup_${element.label}`}
                 label={element.label}
                 groupLabel={groupLabel}
                 bookmarkList={element.bookmarkList}
@@ -95,16 +104,18 @@ const BookmarkSubGroup: React.FC<BookmarkSubGroupProps> = ({
 
 export const BookmarkList: React.FC = () => {
   const bookMarks = useBookmarkStore((state) => state.bookmarkList);
+  console.log(bookMarks);
   return (
     <SimpleGrid columns={2} spacingX={2} spacingY={4}>
       {bookMarks.map((element) => {
         if (isBookmarkElement(element)) {
           element = element as BookmarkElement;
-          return <BookmarkItem bookmarkElement={element} />;
+          return <BookmarkItem key={element.id} bookmarkElement={element} />;
         } else if (isBookmarkGroup(element)) {
           element = element as BookmarkGroupType;
           return (
             <BookmarkGroup
+              key={`bookmarkGroup_${element.label}`}
               label={element.label}
               bookmarkList={element.bookmarkList}
             />

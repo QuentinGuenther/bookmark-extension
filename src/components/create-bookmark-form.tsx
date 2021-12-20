@@ -10,6 +10,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Divider, HStack, Image, VStack } from "@chakra-ui/react";
 import { useBookmarkStore } from "../stores/use-bookmark-store";
 import { BookmarkElement } from "../models/bookmark";
+import { group } from "console";
 
 type Inputs = {
   faviconUrl: string;
@@ -31,6 +32,7 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
   data,
 }) => {
   const addBookmark = useBookmarkStore((state) => state.addBookMark);
+  const deleteBookmark = useBookmarkStore((state) => state.deleteBookmark);
 
   const {
     handleSubmit,
@@ -39,7 +41,15 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
     register,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({
+    defaultValues: {
+      faviconUrl: data?.bookmarkElement.faviconUrl,
+      title: data?.bookmarkElement.faviconUrl,
+      url: data?.bookmarkElement.url,
+      group: data?.group,
+      subGroup: data?.subGroup,
+    },
+  });
 
   const urlWatch = watch("url");
   const faviconUrlWatch = watch("faviconUrl");
@@ -53,17 +63,21 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
     setFieldValues();
   }, [getValues, setValue, urlWatch]);
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
+  const onSubmit: SubmitHandler<Inputs> = (formData) => {
     return new Promise((resolve) => {
       setTimeout(() => {
+        if (data?.bookmarkElement.id) {
+          deleteBookmark(data.bookmarkElement.id, data?.group, data?.subGroup);
+        }
         addBookmark(
           {
-            faviconUrl: data.faviconUrl,
-            label: data.title,
-            url: data.url,
+            id: data?.bookmarkElement.id,
+            faviconUrl: formData.faviconUrl,
+            label: formData.title,
+            url: formData.url,
           } as BookmarkElement,
-          data.group,
-          data.subGroup
+          formData.group,
+          formData.subGroup
         );
         resolve(data);
       }, 3000);
@@ -87,7 +101,6 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
           <Input
             id="url"
             placeholder="url"
-            value={data?.bookmarkElement.url}
             {...register("url", {
               required: "This is required",
               minLength: {
@@ -113,7 +126,6 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
             <Input
               id="faviconUrl"
               placeholder="favicon url"
-              value={data?.bookmarkElement.faviconUrl}
               {...register("faviconUrl", {
                 required: "This is required",
                 minLength: {
@@ -132,7 +144,6 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
           <Input
             id="title"
             placeholder="title"
-            value={data?.bookmarkElement.label}
             {...register("title", {
               required: "This is required",
               minLength: {
@@ -151,7 +162,6 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
           <Input
             id="group"
             placeholder="group"
-            value={data?.group}
             {...register("group", {
               minLength: {
                 value: 4,
@@ -168,7 +178,6 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
           <Input
             id="subGroup"
             placeholder="subGroup"
-            value={data?.subGroup}
             {...register("subGroup", {
               minLength: {
                 value: 4,

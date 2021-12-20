@@ -1,5 +1,6 @@
 export interface BookmarkElement {
   faviconUrl: string;
+  id: string;
   label: string;
   url: string;
 }
