@@ -14,6 +14,7 @@ import {
 import { ContextMenu } from "chakra-ui-contextmenu/lib/cjs";
 import { useState } from "react";
 import { BookmarkElement } from "../models/bookmark";
+import { useBookmarkStore } from "../stores/use-bookmark-store";
 import { AddNewBookmark } from "./add-new-bookmark";
 
 interface BookmarkDisplayProps extends BookmarkElement {}
@@ -71,6 +72,7 @@ const BookmarkContextMenu: React.FC<BookmarkContextMenuProps> = ({
 }) => {
   const { onCopy } = useClipboard(data.bookmarkElement.url);
   const toast = useToast();
+  const deleteBookmark = useBookmarkStore((state) => state.deleteBookmark);
 
   const onCopyClick = () => {
     onCopy();
@@ -85,6 +87,16 @@ const BookmarkContextMenu: React.FC<BookmarkContextMenuProps> = ({
     setShow(true);
   };
 
+  const onDeleteClick = () => {
+    const confirmation = prompt(
+      `Are you sure you want to delete ${data.bookmarkElement.label}?`
+    );
+
+    if (confirmation) {
+      deleteBookmark(data.bookmarkElement.id);
+    }
+  };
+
   return (
     <ContextMenu<HTMLDivElement>
       renderMenu={() => (
@@ -96,7 +108,9 @@ const BookmarkContextMenu: React.FC<BookmarkContextMenuProps> = ({
             Edit
           </MenuItem>
           <MenuGroup title="Danger">
-            <MenuItem icon={<DeleteIcon />}>Delete</MenuItem>
+            <MenuItem icon={<DeleteIcon />} onClick={onDeleteClick}>
+              Delete
+            </MenuItem>
           </MenuGroup>
         </MenuList>
       )}

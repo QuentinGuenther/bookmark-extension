@@ -67,7 +67,7 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
     return new Promise((resolve) => {
       setTimeout(() => {
         if (data?.bookmarkElement.id) {
-          deleteBookmark(data.bookmarkElement.id, data?.group, data?.subGroup);
+          deleteBookmark(data.bookmarkElement.id);
         }
         addBookmark(
           {

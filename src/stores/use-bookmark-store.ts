@@ -4,6 +4,7 @@ import {
   BookmarkBuilder,
   BookmarkElement,
   BookmarkGroup,
+  isBookmarkGroup,
 } from "../models/bookmark";
 import { getBookmarks, storeBookmarks } from "../storage/chrome-storage";
 import filterDeep from "deepdash/es/filterDeep";
@@ -70,11 +71,11 @@ export const useBookmarkStore = create<BookmarkState>((set) => ({
       };
     });
   },
-  deleteBookmark: (id: string, group?: string, subGroup?: string) => {
+  deleteBookmark: (id: string) => {
     set((state) => {
       const filtrate = filterDeep(
         state.bookmarkList,
-        (parent) => {
+        (value, key, parent) => {
           if (parent.id === id) return false;
           else return true;
         },
