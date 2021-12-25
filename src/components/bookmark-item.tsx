@@ -10,6 +10,8 @@ import {
   HStack,
   LinkOverlay,
   Image,
+  Box,
+  BoxProps,
 } from "@chakra-ui/react";
 import { ContextMenu } from "chakra-ui-contextmenu/lib/cjs";
 import { useState } from "react";
@@ -25,19 +27,12 @@ const BookmarkDisplay: React.FC<BookmarkDisplayProps> = ({
   faviconUrl,
 }) => {
   return (
-    <Tooltip
-      hasArrow
-      openDelay={1000}
-      label={url}
-      w="100%"
-      float="left"
-      fontSize="sm"
-    >
+    <Tooltip hasArrow openDelay={1000} label={url} fontSize="xs">
       <LinkBox
         as="article"
-        p={2}
-        width="100%"
         borderRadius="sm"
+        px={2}
+        py={1}
         _hover={{ bg: "teal.700" }}
       >
         <HStack>
@@ -120,7 +115,7 @@ const BookmarkContextMenu: React.FC<BookmarkContextMenuProps> = ({
   );
 };
 
-interface BookmarkItemProps {
+interface BookmarkItemProps extends BoxProps {
   bookmarkElement: BookmarkElement;
   group?: string;
   subGroup?: string;
@@ -130,6 +125,7 @@ export const BookmarkItem: React.FC<BookmarkItemProps> = ({
   bookmarkElement,
   group,
   subGroup,
+  ...rest
 }) => {
   const [show, setShow] = useState<boolean>(false);
   const data = {
@@ -138,11 +134,11 @@ export const BookmarkItem: React.FC<BookmarkItemProps> = ({
     subGroup,
   };
   return (
-    <>
+    <Box {...rest}>
       <BookmarkContextMenu data={data} setShow={setShow}>
         <BookmarkDisplay {...bookmarkElement} />
       </BookmarkContextMenu>
       <AddNewBookmark show={show} data={data} useOpenButton={false} />
-    </>
+    </Box>
   );
 };

@@ -1,4 +1,12 @@
-import { Box, Heading, SimpleGrid, VStack } from "@chakra-ui/layout";
+import {
+  Box,
+  BoxProps,
+  Divider,
+  Heading,
+  ListItem,
+  SimpleGrid,
+  UnorderedList,
+} from "@chakra-ui/layout";
 import {
   BookmarkElement,
   BookmarkGroup as BookmarkGroupType,
@@ -8,7 +16,7 @@ import {
 import { useBookmarkStore } from "../stores/use-bookmark-store";
 import { BookmarkItem } from "./bookmark-item";
 
-interface BookmarkGroupProps {
+interface BookmarkGroupProps extends BoxProps {
   bookmarkList: Array<BookmarkElement | BookmarkGroupType>;
   label: string;
 }
@@ -18,43 +26,36 @@ const BookmarkGroup: React.FC<BookmarkGroupProps> = ({
   ...rest
 }) => {
   return (
-    <Box {...rest}>
-      <Heading fontSize="m">{label}</Heading>
-      <VStack
-        spacing={0}
-        alignItems="start"
-        pl={2}
-        borderWidth={3}
-        p={2}
-        width="auto"
-      >
-        <VStack spacing={0} pl={2} alignItems="start">
-          {bookmarkList.map((element) => {
-            if (isBookmarkElement(element)) {
-              element = element as BookmarkElement;
-              return (
-                <BookmarkItem
-                  key={element.id}
-                  bookmarkElement={element}
-                  group={label}
-                />
-              );
-            } else if (isBookmarkGroup(element)) {
-              element = element as BookmarkGroupType;
-              return (
-                <BookmarkSubGroup
-                  key={`bookmarkGroup_${element.label}_bookmarkSubGroup_${element.label}`}
-                  label={element.label}
-                  groupLabel={label}
-                  bookmarkList={element.bookmarkList}
-                />
-              );
-            } else {
-              return <></>;
-            }
-          })}
-        </VStack>
-      </VStack>
+    <Box borderWidth={1} borderRadius={3} boxShadow="sm" p={2} {...rest}>
+      <Heading fontSize="sm">{label}</Heading>
+      <UnorderedList styleType="none" spacing={2}>
+        {bookmarkList.map((element) => {
+          if (isBookmarkElement(element)) {
+            element = element as BookmarkElement;
+            return (
+              <BookmarkItem
+                key={element.id}
+                bookmarkElement={element}
+                group={label}
+                as={ListItem}
+              />
+            );
+          } else if (isBookmarkGroup(element)) {
+            element = element as BookmarkGroupType;
+            return (
+              <BookmarkSubGroup
+                key={`bookmarkGroup_${element.label}_bookmarkSubGroup_${element.label}`}
+                label={element.label}
+                groupLabel={label}
+                bookmarkList={element.bookmarkList}
+                as={ListItem}
+              />
+            );
+          } else {
+            return <></>;
+          }
+        })}
+      </UnorderedList>
     </Box>
   );
 };
@@ -69,9 +70,12 @@ const BookmarkSubGroup: React.FC<BookmarkSubGroupProps> = ({
   ...rest
 }) => {
   return (
-    <VStack spacing={0} alignItems="start" borderTopWidth={1} pt={3} {...rest}>
-      <Heading fontSize="sm">{label}</Heading>
-      <VStack spacing={0} alignItems="start">
+    <Box {...rest}>
+      <Divider />
+      <Heading fontSize="sm" pt={3}>
+        {label}
+      </Heading>
+      <UnorderedList styleType="none" spacing={2}>
         {bookmarkList.map((element) => {
           if (isBookmarkElement(element)) {
             element = element as BookmarkElement;
@@ -81,6 +85,7 @@ const BookmarkSubGroup: React.FC<BookmarkSubGroupProps> = ({
                 bookmarkElement={element}
                 group={groupLabel}
                 subGroup={label}
+                as={ListItem}
               />
             );
           } else if (isBookmarkGroup(element)) {
@@ -91,14 +96,15 @@ const BookmarkSubGroup: React.FC<BookmarkSubGroupProps> = ({
                 label={element.label}
                 groupLabel={groupLabel}
                 bookmarkList={element.bookmarkList}
+                as={ListItem}
               />
             );
           } else {
             return <></>;
           }
         })}
-      </VStack>
-    </VStack>
+      </UnorderedList>
+    </Box>
   );
 };
 
@@ -106,7 +112,7 @@ export const BookmarkList: React.FC = () => {
   const bookMarks = useBookmarkStore((state) => state.bookmarkList);
   console.log(bookMarks);
   return (
-    <SimpleGrid columns={2} spacingX={2} spacingY={4}>
+    <SimpleGrid columns={3} spacingX={4} spacingY={2}>
       {bookMarks.map((element) => {
         if (isBookmarkElement(element)) {
           element = element as BookmarkElement;

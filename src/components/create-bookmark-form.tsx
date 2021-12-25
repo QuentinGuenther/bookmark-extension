@@ -10,7 +10,6 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Divider, HStack, Image, VStack } from "@chakra-ui/react";
 import { useBookmarkStore } from "../stores/use-bookmark-store";
 import { BookmarkElement } from "../models/bookmark";
-import { group } from "console";
 
 type Inputs = {
   faviconUrl: string;

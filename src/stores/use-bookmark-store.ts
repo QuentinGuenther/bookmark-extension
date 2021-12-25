@@ -4,7 +4,6 @@ import {
   BookmarkBuilder,
   BookmarkElement,
   BookmarkGroup,
-  isBookmarkGroup,
 } from "../models/bookmark";
 import { getBookmarks, storeBookmarks } from "../storage/chrome-storage";
 import filterDeep from "deepdash/es/filterDeep";
