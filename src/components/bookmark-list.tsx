@@ -112,7 +112,7 @@ export const BookmarkList: React.FC = () => {
   const bookMarks = useBookmarkStore((state) => state.bookmarkList);
   console.log(bookMarks);
   return (
-    <SimpleGrid columns={3} spacingX={4} spacingY={2}>
+    <SimpleGrid minChildWidth="250px" spacingX={4} spacingY={2} mt={6}>
       {bookMarks.map((element) => {
         if (isBookmarkElement(element)) {
           element = element as BookmarkElement;

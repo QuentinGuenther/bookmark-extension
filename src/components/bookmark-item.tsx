@@ -12,6 +12,7 @@ import {
   Image,
   Box,
   BoxProps,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { ContextMenu } from "chakra-ui-contextmenu/lib/cjs";
 import { useState } from "react";
@@ -26,6 +27,7 @@ const BookmarkDisplay: React.FC<BookmarkDisplayProps> = ({
   label,
   faviconUrl,
 }) => {
+  const hoverBgColor = useColorModeValue("teal.200", "teal.700");
   return (
     <Tooltip hasArrow openDelay={1000} label={url} fontSize="xs">
       <LinkBox
@@ -33,7 +35,7 @@ const BookmarkDisplay: React.FC<BookmarkDisplayProps> = ({
         borderRadius="sm"
         px={2}
         py={1}
-        _hover={{ bg: "teal.700" }}
+        _hover={{ bg: hoverBgColor }}
       >
         <HStack>
           <Image

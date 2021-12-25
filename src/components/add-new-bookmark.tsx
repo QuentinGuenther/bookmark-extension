@@ -36,12 +36,14 @@ export const AddNewBookmark: React.FC<AddNewBookmarkProps> = ({
 
   return (
     <>
-      {useOpenButton && <Button onClick={onOpen}>Open Modal</Button>}
+      {useOpenButton && <Button onClick={onOpen}>Create New Bookmark</Button>}
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>
+            {data ? "Update Bookmark" : "Create New Bookmark"}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <CreateBookmarkForm data={data} />

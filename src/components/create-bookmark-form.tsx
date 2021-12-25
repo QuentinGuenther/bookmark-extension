@@ -7,7 +7,7 @@ import {
 import { Input } from "@chakra-ui/input";
 import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Divider, HStack, Image, VStack } from "@chakra-ui/react";
+import { Center, Divider, HStack, Image, VStack } from "@chakra-ui/react";
 import { useBookmarkStore } from "../stores/use-bookmark-store";
 import { BookmarkElement } from "../models/bookmark";
 
@@ -56,7 +56,7 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
   useEffect(() => {
     async function setFieldValues() {
       const url = getValues("url");
-      setValue("faviconUrl", ` https://f1.allesedv.com/${url}`);
+      setValue("faviconUrl", await getFavicon(url));
       setValue("title", await getTitleFromURL(url).then((data) => data));
     }
     setFieldValues();
@@ -83,8 +83,44 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
     });
   };
 
+  const getFavicon = async (url: string): Promise<string> => {
+    const fileTypes = ["ico", "png", "gif", "jpeg", "svg"];
+
+    for (const fileType of fileTypes) {
+      try {
+        const faviconUrl = new URL(url);
+        const returnUrl = await fetch(
+          `https://pure-plains-13694.herokuapp.com/${faviconUrl.origin}/favicon.${fileType}`
+        )
+          .then((data) => {
+            console.log(data);
+            if (data.ok) {
+              return data.text();
+            } else {
+              throw new Error("");
+            }
+          })
+          .then(() => {
+            return `${faviconUrl.origin}/favicon.${fileType}`;
+          })
+          .catch(
+            () =>
+              `https://www.google.com/s2/favicons?domain=${faviconUrl.hostname.replace(
+                "www.",
+                ""
+              )}`
+          );
+
+        return returnUrl;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    return "";
+  };
+
   const getTitleFromURL = (url: string) =>
-    fetch(url)
+    fetch(`https://pure-plains-13694.herokuapp.com/${url}`)
       .then((response) => response.text())
       .then((html) => {
         const doc = new DOMParser().parseFromString(html, "text/html");
@@ -94,38 +130,14 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <VStack>
-        <FormControl isInvalid={!!errors.url}>
-          <FormLabel htmlFor="url">URL</FormLabel>
-          <Input
-            id="url"
-            placeholder="url"
-            {...register("url", {
-              required: "This is required",
-              minLength: {
-                value: 4,
-                message: "Minimum length should be 4",
-              },
-            })}
-          />
-          <FormErrorMessage>
-            {errors.url && errors.url.message}
-          </FormErrorMessage>
-        </FormControl>
-        <Divider />
-        <FormControl isInvalid={!!errors.faviconUrl}>
-          <FormLabel htmlFor="faviconUrl">Favicon URL</FormLabel>
-          <HStack>
-            <Image
-              src={faviconUrlWatch}
-              width="32px"
-              height="32px"
-              fallbackSrc="favicon.ico"
-            />
+      <VStack spacing={6} align="stretch">
+        <VStack>
+          <FormControl isInvalid={!!errors.url}>
+            <FormLabel htmlFor="url">URL</FormLabel>
             <Input
-              id="faviconUrl"
-              placeholder="favicon url"
-              {...register("faviconUrl", {
+              id="url"
+              placeholder="url"
+              {...register("url", {
                 required: "This is required",
                 minLength: {
                   value: 4,
@@ -133,69 +145,102 @@ export const CreateBookmarkForm: React.FC<CreateBookmarkFormProps> = ({
                 },
               })}
             />
-          </HStack>
-          <FormErrorMessage>
-            {errors.faviconUrl && errors.faviconUrl.message}
-          </FormErrorMessage>
-        </FormControl>
-        <FormControl isInvalid={!!errors.title}>
-          <FormLabel htmlFor="title">Title</FormLabel>
-          <Input
-            id="title"
-            placeholder="title"
-            {...register("title", {
-              required: "This is required",
-              minLength: {
-                value: 4,
-                message: "Minimum length should be 4",
-              },
-            })}
-          />
-          <FormErrorMessage>
-            {errors.url && errors.url.message}
-          </FormErrorMessage>
-        </FormControl>
+            <FormErrorMessage>
+              {errors.url && errors.url.message}
+            </FormErrorMessage>
+          </FormControl>
+        </VStack>
         <Divider />
-        <FormControl isInvalid={!!errors.group}>
-          <FormLabel htmlFor="group">Group</FormLabel>
-          <Input
-            id="group"
-            placeholder="group"
-            {...register("group", {
-              minLength: {
-                value: 4,
-                message: "Minimum length should be 4",
-              },
-            })}
-          />
-          <FormErrorMessage>
-            {errors.group && errors.group.message}
-          </FormErrorMessage>
-        </FormControl>
-        <FormControl isInvalid={!!errors.subGroup}>
-          <FormLabel htmlFor="subGroup">Sub Group</FormLabel>
-          <Input
-            id="subGroup"
-            placeholder="subGroup"
-            {...register("subGroup", {
-              minLength: {
-                value: 4,
-                message: "Minimum length should be 4",
-              },
-            })}
-          />
-          <FormErrorMessage>
-            {errors.subGroup && errors.subGroup.message}
-          </FormErrorMessage>
-        </FormControl>
-        <Button
-          mt={4}
-          colorScheme="teal"
-          isLoading={isSubmitting}
-          type="submit"
-        >
-          Create
-        </Button>
+        <VStack>
+          <FormControl isInvalid={!!errors.faviconUrl}>
+            <FormLabel htmlFor="faviconUrl">Favicon URL</FormLabel>
+            <HStack>
+              <Image
+                src={faviconUrlWatch}
+                width="32px"
+                height="32px"
+                fallbackSrc="favicon.ico"
+              />
+              <Input
+                id="faviconUrl"
+                placeholder="favicon url"
+                {...register("faviconUrl", {
+                  required: "This is required",
+                  minLength: {
+                    value: 4,
+                    message: "Minimum length should be 4",
+                  },
+                })}
+              />
+            </HStack>
+            <FormErrorMessage>
+              {errors.faviconUrl && errors.faviconUrl.message}
+            </FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={!!errors.title}>
+            <FormLabel htmlFor="title">Title</FormLabel>
+            <Input
+              id="title"
+              placeholder="title"
+              {...register("title", {
+                required: "This is required",
+                minLength: {
+                  value: 4,
+                  message: "Minimum length should be 4",
+                },
+              })}
+            />
+            <FormErrorMessage>
+              {errors.url && errors.url.message}
+            </FormErrorMessage>
+          </FormControl>
+        </VStack>
+        <Divider />
+        <VStack>
+          <FormControl isInvalid={!!errors.group}>
+            <FormLabel htmlFor="group">Group</FormLabel>
+            <Input
+              id="group"
+              placeholder="group"
+              {...register("group", {
+                minLength: {
+                  value: 4,
+                  message: "Minimum length should be 4",
+                },
+              })}
+            />
+            <FormErrorMessage>
+              {errors.group && errors.group.message}
+            </FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={!!errors.subGroup}>
+            <FormLabel htmlFor="subGroup">Sub Group</FormLabel>
+            <Input
+              id="subGroup"
+              placeholder="subGroup"
+              {...register("subGroup", {
+                minLength: {
+                  value: 4,
+                  message: "Minimum length should be 4",
+                },
+              })}
+            />
+            <FormErrorMessage>
+              {errors.subGroup && errors.subGroup.message}
+            </FormErrorMessage>
+          </FormControl>
+        </VStack>
+        <Center>
+          <Button
+            my={4}
+            width="100%"
+            colorScheme="teal"
+            isLoading={isSubmitting}
+            type="submit"
+          >
+            {data ? "Update" : "Create"}
+          </Button>
+        </Center>
       </VStack>
     </form>
   );
