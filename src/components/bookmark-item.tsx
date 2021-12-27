@@ -14,7 +14,7 @@ import {
   BoxProps,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { ContextMenu } from "chakra-ui-contextmenu/lib/cjs";
+import { ContextMenu } from "chakra-ui-contextmenu/lib/cjs/ContextMenu";
 import { useState } from "react";
 import { BookmarkElement } from "../models/bookmark";
 import { useBookmarkStore } from "../stores/use-bookmark-store";

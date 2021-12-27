@@ -36,7 +36,11 @@ export const AddNewBookmark: React.FC<AddNewBookmarkProps> = ({
 
   return (
     <>
-      {useOpenButton && <Button onClick={onOpen}>Create New Bookmark</Button>}
+      {useOpenButton && (
+        <Button onClick={onOpen} colorScheme="blue">
+          Create New Bookmark
+        </Button>
+      )}
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
