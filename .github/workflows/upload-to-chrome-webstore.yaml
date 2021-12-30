@@ -7,12 +7,19 @@ on:
       - "public"
       - "package.json"
 jobs:
-  steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 14.17.3
-      uses: actions/setup-node@v1
-      with:
-        node-version: 14.17.3
+  deploy:
+        runs-on: self-hosted
+    
+    strategy: 
+        matrix:
+            node-version: [14.x]
+            
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+            node-version: ${{ matrix.node-version }}
     - run: npm install
     - run: npm run build --if-present
     - run: CLIENT_ID=${CLIENT_ID} CLIENT_SECRET=${CLIENT_SECRET} EXTENSION_ID=${EXTENSION_ID} REFRESH_TOKEN=${REFRESH_TOKEN} node ./deploy.js
